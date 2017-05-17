@@ -20,7 +20,12 @@ def validate_number(num)
 end
 
 def validate_operator(operator)
-    !!(operator =~ /[+*\/-]/)
+    !!(operator =~ /^[+*\/-]{1}$/)
+end
+
+
+def get_num_input
+    puts "Enter your number"
 end
 
 
