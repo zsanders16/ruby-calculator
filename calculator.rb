@@ -5,13 +5,64 @@
 def main
     puts "Welcome to a ridiculous calulator app \n\n"
 
-    get_lh_input
-    get_operator_input
-    get_rh_input
+    puts "What would you like to do?"
+    puts "1) Enter indiviual numbers"
+    puts "2) Enter mathmatical phrase"
+    puts "3) Quit"
 
-    calculate  
+    answer = gets.chomp
 
-    menu 
+    case answer
+        when "1"
+            get_lh_input
+            get_operator_input
+            get_rh_input
+
+            calculate  
+
+            menu 
+        when "2"
+            eval_math_phrase
+        when "3"
+            puts "Goodbye"
+        else
+            put "Iinvalid input, try again"
+            main
+    end
+end
+
+def menu
+    puts "Please select an option"
+    puts "1) Continue with this operation"
+    puts "2) Start a new operation"
+    puts "3) Return to main menu"
+    puts "4) Quit"
+
+    input = gets.chomp
+
+    case input
+        when "1"
+
+            get_operator_input
+            get_rh_input
+
+            calculate
+            menu
+        when "2"
+            get_lh_input
+            get_operator_input
+            get_rh_input
+
+            calculate
+            menu
+        when "3"
+            main
+        when "4"
+            puts "Goodbye"
+        else 
+            puts "Invalid input, try again"
+            menu
+    end
 end
 
 
@@ -23,11 +74,9 @@ def validate_operator(operator)
     !!(operator =~ /^[+*\/-]{1}$/)
 end
 
-
 def get_num_input
     puts "Enter your number"
 end
-
 
 def get_lh_input
     
@@ -70,41 +119,41 @@ def calculate
     answer = @left_hand.send(@operator, @right_hand)
     puts "Your answer is #{answer} \n\n"
     @left_hand = answer
-
-
 end  
 
-def menu
-    puts "Please select an option"
-    puts "1) Continue with this operation"
-    puts "2) Start a new operation"
-    puts "3) Quit"
+def eval_math_phrase
+    puts "Input a mathmatical pharse like 7+6+(2*3)"
+    phrase = gets.chomp
 
-    input = gets.chomp
+    phrase = parentheses(phrase)
+    phrase = order_of_operations(phrase)
 
-    case input
-        when "1"
+    puts "The answer is #{phrase}"    
 
-            get_operator_input
-            get_rh_input
+    menu
+end
 
-            calculate
-            menu
-        when "2"
-            get_lh_input
-            get_operator_input
-            get_rh_input
+def parentheses(str) 
+    str.sub!(/(\(.+\))/) { |inner| order_of_operations(inner.gsub!(/[()]/, "")) }
 
-            calculate
-            menu
-        when "3"
-            puts "Goodbye"
-        else 
-            puts "Invalid input, try again"
-            menu
+    return str
+end
+
+def order_of_operations(str)
+
+    total = (str.count "*") + (str.count "/")
+
+    for i in  1..total do
+        str.sub!(/((\d+)\s?(\*|\/)\s?(\d+))/) { Regexp.last_match[2].to_i.send(Regexp.last_match[3], Regexp.last_match[4].to_i)}
     end
-        
-    
+
+    total = (str.count "+") + (str.count "-")
+
+    for i in  1..total do
+        str.sub!(/((\d+)\s?(\+|\-)\s?(\d+))/) { Regexp.last_match[2].to_i.send(Regexp.last_match[3], Regexp.last_match[4].to_i)}
+    end
+
+    return str
 end
 
 main
